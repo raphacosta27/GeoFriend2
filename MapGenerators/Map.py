@@ -1,4 +1,4 @@
-from MapGenerators.Obstacle import Obstacle
+from Obstacle import Obstacle
 
 
 class Map(object):

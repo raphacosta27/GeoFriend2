@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from MapGenerators.Map import Map
+from Map import Map
 
 
 # Map gen class
