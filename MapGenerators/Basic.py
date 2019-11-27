@@ -1,6 +1,6 @@
 import random
-from Map import Map
-from MapGenerator import MapGenerator
+from MapGenerators.Map import Map
+from MapGenerators.MapGenerator import MapGenerator
 
 
 # Simple map, agents on one side, rewards on the other

@@ -1,0 +1,1 @@
+from gym_geofriend2.envs.geofriend2_env import GeoFriend2Env

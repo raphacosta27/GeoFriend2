@@ -1,0 +1,6 @@
+README.md
+gym_geofriend2.egg-info/PKG-INFO
+gym_geofriend2.egg-info/SOURCES.txt
+gym_geofriend2.egg-info/dependency_links.txt
+gym_geofriend2.egg-info/requires.txt
+gym_geofriend2.egg-info/top_level.txt
