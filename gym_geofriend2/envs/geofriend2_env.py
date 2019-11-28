@@ -1,6 +1,6 @@
 import gym
-from gym import error, spaces, utils
 from gym.utils import seeding
+from gym.spaces import Discrete, Box
 
 from MapGenerators.Corners import Corners
 import pygame
@@ -12,9 +12,9 @@ class GeoFriend2Env(gym.Env):
         GeoFriend is the player and his unique and basic objective is to collect all the points that are distributed along the map.
     Observation: 
         Type: Box(2)
-        Num	Observation                 Min                  Max
-        0	  Circle Position             Left limit           Right limit
-        1	  Circle Velocity             -Inf                 Inf
+        Num	  Observation                     Min                  Max
+        0	  Circle Position x             40 (+raio)           1240 (-raio)
+        1	  Circle Position y             40 (+raio)           760  (-raio)
         
     Action:
         Type: Discrete(4)
@@ -25,66 +25,61 @@ class GeoFriend2Env(gym.Env):
         3	Push Circle to the bottom
         
     Reward:
-        Reward is 1 if the player collects one point. 
-    Starting State:
-        All observations are assigned a uniform random value in [-0.05..0.05]
+        Reward is 1 if the player collects one point and 0 if the movement doesnt collect any point. 
     Episode Termination:
         All the rewards for that map were collected.
     """
 
-  def __init__(self, map, agent=None, screen_res=[640, 400] ):
-    self.map = map
+  action_space = Discrete(4)
 
-    self.action_space = spaces.Discrete(4)
-    self.observation_space = spaces.Box(left_limit, right_limit, dtype=np.float32)
-
-    #Init for rendering pygame
-    self.screen_res = screen_res
-    self.screen, self.gui_window, self.screen_resized = None, None, None
-
-    pygame.init()
-    self.screen = pygame.surface.Surface((1280, 800))  # original GF size
-    self.screen_resized = pygame.surface.Surface(screen_res)  # original GF size
-    pygame.display.set_caption("GeoFriend2")
-
-  # def step(self, action):
-  #   ...
-
+  def __init__(self):
+      self.action_space = Discrete(4)
+      self.observation_space = Box(40, right_limit, dtype=np.float32)
+      self.GeoFriend2 = None
+      
+  def render(self):
+      if self.GeoFriend2 is not None:
+          self.GeoFriend2.render()
+                  
   def reset(self):
-    self.prepare_frame()
+      self.GeoFriend2 = GeoFriend2()
+  
+      return self.GeoFriend2.game_state() # nao sei o que retornar ainda
 
-  def render(self, close = False):
-    if close:
-      pygame.quit()
-      self.screen = None
-      return
+  def step(self, action):
+      if self.predict_for is not None:
+          return self.tictactoe.board_state.flatten(), 0, True, {}
 
-    if self.gui_window is None:
-      pygame.init()
-      self.screen = pygame.surface.Surface((1280, 800))  # original GF size
-      pygame.display.set_caption("GeoFriend2")
-      self.gui_window = pygame.display.set_mode(self.screen_res, HWSURFACE | DOUBLEBUF | RESIZABLE)
+      translated_action = TicTacToe.translate_position_to_xy(action)
+      
 
-    self.prepare_frame()
+      try:
+          self.tictactoe.make_move(translated_action[0], translated_action[1])
 
-    self.gui_window.blit(pygame.transform.scale(self.screen, self.screen_res), (0, 0))
-    pygame.display.flip()
+      except AssertionError:
+          return self.tictactoe.board_state.flatten(), -1, True, {}
 
-  def prepare_frame(self):
-    self.screen.fill((0, 0, 255))
-    # Draw obstacles
-    for obs in self.map.obstacles:
-        pygame.draw.rect(self.screen, (0, 0, 0),
-                          [obs.left_x, obs.top_y, obs.right_x - obs.left_x, obs.bot_y - obs.top_y])
-    # Draw agents
-    if(self.agent):
-      agent.render(self.screen)
-      agent.step()
+      reward = 0
+      done = False
+      winner = self.tictactoe.is_finished()
+      if winner == 0:
+          move = self._get_random_move()
+          self.tictactoe.make_move(move[0], move[1])
 
-    # Draw rewards
-    for reward in self.map.rewards:
-        pygame.draw.circle(self.screen, (255, 0, 255), [int(reward[0]), int(reward[1])], 25)
+          next_winner = self.tictactoe.is_finished()
+          if next_winner == 1:
+              reward = -1
+              done = True
+          elif next_winner == 3:
+              reward = 0
+              done = True
 
-  def close(self):
-    self.render(close=True)
-    return
+      elif winner == 2:
+          reward = 1
+          done = True
+
+      elif winner == 3:
+          reward = 0
+          done = True
+
+      return self.tictactoe.board_state.flatten(), reward, done, {}

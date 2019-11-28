@@ -47,3 +47,13 @@ nao precisa do PLAYER, nosso player é uma rede neural. A logica de definir o ma
 os pontos, etc, todas ficam no GeoFriend2. Ver tictactoe e cartpole.
 Vamo comecar com o basico, com o mapa Basic, fazer ele pegar os pontos sem nenhum obstaculo, testar e depois 
 implementar o obstaculo!
+
+Ver como o action_space vai definir uma acao (exemplo, se ele definir que quer ir pra cima (2), a gente
+tem que move pra cima) ver implementacao do amiguinho la
+Talvez a gente nao queria o spin, so queremos que ela se mova na direcao escolhida
+
+Decide ação ----> anda com o player ---> checa se pegou alguma reward
+                                                |             |
+                                                |             |
+                                                |             | 
+                                        Se pegou, r = 1     Se nao, r = 0
