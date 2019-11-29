@@ -5,7 +5,6 @@ from MapGenerators.MapGenerator import MapGenerator
 
 # Simple map, agents on one side, rewards on the other
 class Basic(MapGenerator):
-
     def generate(self):
         if random.random() > 0.5:
             map = Map([],
