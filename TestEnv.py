@@ -90,34 +90,15 @@ map = Basic()
 player = Player()
 env = gym.make("geofriend2-v0", map=map, player=player)
 
-dqn = build_dqn(env)
+# dqn = build_dqn(env)
+# log_interval = 10000
+# dqn.fit(env, nb_steps=50000, visualize=True, verbose=1,
+#     callbacks=[ModelIntervalCheckpoint(interval=log_interval)],
+#     log_interval=log_interval
+# )
 
-dqn.fit(env, nb_steps=50000, visualize=True, verbose=1,
-    callbacks=[ModelIntervalCheckpoint(interval=log_interval)],
-    log_interval=log_interval
-)
-
-
-    # def cartpole():
-#     env = gym.make("CartPole-v1")
-#     observation_space = env.observation_space.shape[0]
-#     action_space = env.action_space.n
-#     dqn_solver = DQNSolver(observation_space, action_space)
-#     while True:
-#         state = env.reset()
-#         state = np.reshape(state, [1, observation_space])
-#         while True:
-#             env.render()
-#             action = dqn_solver.act(state)
-#             state_next, reward, terminal, info = env.step(action)
-#             reward = reward if not terminal else -reward
-#             state_next = np.reshape(state_next, [1, observation_space])
-#             dqn_solver.remember(state, action, reward, state_next, terminal)
-#             dqn_solver.experience_replay()
-#             state = state_next
-#             if terminal:
-#                 breakstate = env.reset()
-# print("State: ", state)
-# run = True
-# while run:
-#     env.render() 
+state = env.reset()
+print("State: ", state)
+run = True
+while run:
+    env.render() 

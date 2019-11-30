@@ -6,7 +6,7 @@ class Player():
     def __init__(self):
         self.radius = 40
         self.x = 40 + self.radius
-        self.y = 800 - 40 - self.radius
+        self.y = 800 - 40 - self.radius 
         self.vel = 10
         
     def player_step(self, action):
@@ -29,3 +29,7 @@ class Player():
     
     def get_player_position(self):
         return self.x, self.y
+    
+    def set_initial_position(self):
+        self.x = 40 + self.radius
+        self.y = 800 - 40 - self.radius
