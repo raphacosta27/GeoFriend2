@@ -74,9 +74,9 @@ class GeoFriend2:
                 print("Caught reward")
                 return 1
             else:
-                if(difference > 0):
+                if(difference < 0):
                     return 1
-                elif (difference < 0):
+                elif (difference > 0):
                     return -1
                 else:
                     return 0
@@ -95,6 +95,7 @@ class GeoFriend2:
         rewardy = self.map.rewards[0][1]
         distance_before = math.sqrt( ((playerx-rewardx)**2)+((playery-rewardy)**2) )
         self.player.player_step(action)
+        playerx, playery = self.player.get_player_position()
         distance_after = math.sqrt( ((playerx-rewardx)**2)+((playery-rewardy)**2) )
         return distance_after-distance_before
 

@@ -49,15 +49,14 @@ class GeoFriend2Env(gym.Env):
             self.GeoFriend2.render()
                     
     def reset(self):
-        print("Called reset")
         self.GeoFriend2 = GeoFriend2(self.map, self.player)
-        print("Initial state (?): ", self.GeoFriend2.state)
         self.GeoFriend2.reset_view()
         return self.GeoFriend2.set_state() # nao sei o que retornar ainda
 
     def step(self, action): 
         try:
             difference = self.GeoFriend2.player_step(action)
+            print("Difference: ", difference)
         except AssertionError:
             return self.GeoFriend2.state, -1, True, {}
 

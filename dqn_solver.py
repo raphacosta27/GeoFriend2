@@ -79,7 +79,7 @@ while True:
         env.render()
         action = dqn_solver.act(state)
         state_next, reward, terminal, info = env.step(action)
-        print("Reward state next: ", reward)
+        print("Action: {0}\nReward state next: {1}".format(action, reward))
         reward = reward if not terminal else -reward
         state_next = np.reshape(state_next, [1, observation_space])
         dqn_solver.remember(state, action, reward, state_next, terminal)
