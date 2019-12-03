@@ -35,9 +35,9 @@ class GeoFriend2Env(gym.Env):
     Episode Termination:
         All the rewards for that map were collected.
     """
-
+    action_space = Discrete(4)
     def __init__(self, map, player):
-        self.action_space = Discrete(4)
+        # self.action_space = Discrete(4)
         self.observation_space = Box( low = np.array([80,80,65]), 
                                       high = np.array([1200,720,1311]) )
         self.GeoFriend2 = None

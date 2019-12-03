@@ -8,7 +8,7 @@ from Player.Player import Player
 _, get_action = load_policy('./spinupPpo')
 map = Basic()
 player = Player()
-env = lambda : gym.make("geofriend2-v0", map=map, player=player)
+env = gym.make("geofriend2-v0", map=map, player=player)
 #run_policy(env, get_action, render=False)
 
 for i in range(1):
