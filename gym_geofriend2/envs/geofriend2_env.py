@@ -17,10 +17,18 @@ class GeoFriend2Env(gym.Env):
         Num	  Observation                   Min                          Max
         0	  Circle Position x             80 (obstacle+raio)           1200 (1280-obstacle-raio)
         1	  Circle Position y             80 (obstacle+raio)           720  (800-obstacle-raio)
-        2     Distance to Reward            65 (raioP + raioR)           1311 (distancia no pior caso, ver caderno)
-        ideia2
+        
         2     Reward Position x             65 (obstacle+raio)           1215 (1280-obstacle-raio)
         3     Reward Position y             65 (obstacle+raio)           735  (800-obstacle-raio)
+
+        4     Obstacle left_x               25                           1255
+        5     Obstacle top_y                25                           775
+        6     Obstacle right_X              25                           1255
+        7     Obstacle bot_y                25                           775
+        .
+        .
+        .
+        .
         
     Action:
         Type: Discrete(4)
@@ -35,11 +43,13 @@ class GeoFriend2Env(gym.Env):
     Episode Termination:
         All the rewards for that map were collected.
     """
-    action_space = Discrete(4)
+    # action_space = Discrete(4)
     def __init__(self, map, player):
-        # self.action_space = Discrete(4)
-        self.observation_space = Box( low = np.array([80,80,65]), 
-                                      high = np.array([1200,720,1311]) )
+        self.action_space = Discrete(4)
+
+        
+        self.observation_space = Box( low = np.array([80,80,65, 65, 25, 25, 25, 25]), 
+                                      high = np.array([1200,720,1215, 735, 1255, 775, 1255, 775]) )
         self.GeoFriend2 = None
         self.map = map
         self.player = player
@@ -56,11 +66,12 @@ class GeoFriend2Env(gym.Env):
     def step(self, action): 
         try:
             difference = self.GeoFriend2.player_step(action)
-            print("Difference: ", difference)
         except AssertionError:
             return self.GeoFriend2.state, -1, True, {}
 
         observation = self.GeoFriend2.set_state()
         reward = self.GeoFriend2.get_episode_reward(difference)
         done = self.GeoFriend2.is_finished()
+        # if reward == 1 and done:
+        #     print("Done")
         return observation, reward, done, {}
