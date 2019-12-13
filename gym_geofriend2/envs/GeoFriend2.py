@@ -101,45 +101,49 @@ class GeoFriend2:
         distance_before = math.sqrt( ((playerx-rewardx)**2)+((playery-rewardy)**2) )
         self.player.player_step(action)
         playerx, playery = self.player.get_player_position()
-        print(self.map.obstacles[4])
-        print(self.collision( self.map.obstacles[4].left_x, self.map.obstacles[4].top_y, 
-                              self.map.obstacles[4].right_x - self.map.obstacles[4].left_x, 
-                              self.map.obstacles[4].bot_y - self.map.obstacles[4].top_y,
-                              playerx, playery, self.player.radius))
-        print("----------------------")
+        collide = self.collision( playerx, playery, self.player.radius,
+                              self.map.obstacles[4].center_x - self.map.obstacles[4].half_width,
+                              self.map.obstacles[4].center_y - self.map.obstacles[4].half_height,
+                              self.map.obstacles[4].half_width * 2,
+                              self.map.obstacles[4].half_height * 2
+                              ))
+                              
         distance_after = math.sqrt( ((playerx-rewardx)**2)+((playery-rewardy)**2) )
         return distance_after-distance_before
 
-    def collision(self, rleft, rtop, width, height,   # rectangle definition
-                center_x, center_y, radius):  # circle definition
-        """ Detect collision between a rectangle and circle. """
+    def collision(self, cx, cy, radius, rx, ry, rw, rh):  # circle definition
+        """ Detect collision between a rectangle and circle. 
+        cx, cy: circle position
+        radius: circle radius
+        rx, ry: rectangle position
+        rw, rh: rectangle width and height
+        """ 
+        # rx, ry = rleft + rw/2, rtop + rh/2
+        # print("rx: {0}, ry: {1}".format(rx, ry))
+        testX = cx
+        testY = cy
 
-        # complete boundbox of the rectangle
-        # rright, rbottom = rleft + width/2, rtop + height/2
-        rright, rbottom = rleft + width, rtop + height
+        #If the circle is to the RIGHT of the square, check against the RIGHT edge. LEFT otherwise.   
+        if (cx < rx):
+            testX = rx        #left edge
+        elif (cx > rx+rw): 
+            testX = rx+rw     #right edge
 
-        # bounding box of the circle
-        cleft, ctop     = center_x-radius, center_y-radius
-        cright, cbottom = center_x+radius, center_y+radius
+        #If the circle is ABOVE the square, check against the TOP edge. BOTTOM otherwise
+        if (cy < ry):
+            testY = ry        #top edge
+        elif (cy > ry+rh):
+            testY = ry+rh     #bottom edge
 
-        # trivial reject if bounding boxes do not intersect
-        if rright < cleft or rleft > cright or rbottom < ctop or rtop > cbottom:
-            print("no colission possible")
-            return False  # no collision possible
+        distX = cx-testX
+        distY = cy-testY
+        distance = math.sqrt( (distX*distX) + (distY*distY) )
 
-        # check whether any point of rectangle is inside circle's radius
-        for x in (rleft, rleft+width):
-            for y in (rtop, rtop+height):
-                # compare distance between circle's center point and each point of
-                # the rectangle with the circle's radius
-                if math.hypot(x-center_x, y-center_y) <= radius:
-                    return True  # collision detected
+        if (distance <= radius):
+            return True
 
-        # check if center of circle is inside rectangle
-        if rleft <= center_x <= rright and rtop <= center_y <= rbottom:
-            return True  # overlaid
+        return False
 
-        return False  # no collision detected
     
 def test():
     map = Pyramid()
@@ -157,18 +161,18 @@ def test():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     teste.player_step(0)
-                    print("Moving Left")
                 elif event.key == pygame.K_RIGHT:
                     teste.player_step(1)
-                    print("Moving Right")
                 elif event.key == pygame.K_UP:
                     teste.player_step(2)
-                    print("Moving up")
                 elif event.key == pygame.K_DOWN:
                     teste.player_step(3)
-                    print("Moving down")
                 # elif event.key == pygame.K_SPACE:
                 #     print("Space pressed")
                 #     teste.check_reward()
+            # if event.type == pygame.MOUSEBUTTONUP:
+            #     print("Mouse event")
+            #     pos = pygame.mouse.get_pos()
+            #     print(pos)
 
 test()

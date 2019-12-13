@@ -46,12 +46,17 @@ class GeoFriend2Env(gym.Env):
     # action_space = Discrete(4)
     def __init__(self, map, player):
         self.action_space = Discrete(4)
-
-        
-        self.observation_space = Box( low = np.array([80,80,65, 65, 25, 25, 25, 25]), 
-                                      high = np.array([1200,720,1215, 735, 1255, 775, 1255, 775]) )
-        self.GeoFriend2 = None
         self.map = map
+        low = [80,80,65,65]
+        high = [1200,720,1215,735]
+        for obs in self.map.obstacles:
+                low.append(25, 25, 25, 25)
+                high.append(1255, 775, 1255, 775)
+
+        self.observation_space = Box( low = np.array(low), 
+                                      high = np.array(high) )
+        self.GeoFriend2 = None
+        
         self.player = player
         
     def render(self, mode='human'):
