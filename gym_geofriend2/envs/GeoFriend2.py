@@ -62,7 +62,7 @@ class GeoFriend2:
         playerx, playery = self.player.get_player_position()
         if( (playerx < 80) | (playerx > 1200) | (playery < 80) | (playery > 720) ):
             player_is_out = True
-        return (len(self.map.rewards) == 0) | player_is_out
+        return (len(self.map.rewards) == 0) | player_is_out | self.check_collide()
 
     def get_episode_reward(self, difference):
         playerx, playery = self.player.get_player_position()
@@ -88,9 +88,10 @@ class GeoFriend2:
         rewardy = self.map.rewards[0][1]
         # distance = math.sqrt( ((playerx-rewardx)**2)+((playery-rewardy)**2) )
         state = [playerx, playery, rewardx, rewardy]
-        for obs in self.map.obstacles:
-                self.state.append(obs.left_x, obs.top_y, obs.right_x, obs.bot_y)
-
+        # for obs in self.map.obstacles:
+                # state.extend([obs.left_x, obs.top_y, obs.right_x, obs.bot_y])
+        state.extend([self.map.obstacles[4].left_x, self.map.obstacles[4].top_y, self.map.obstacles[4].right_x, self.map.obstacles[4].bot_y])
+        # print(len(state))
         self.state = np.array(state)
         return self.state
 
@@ -101,16 +102,24 @@ class GeoFriend2:
         distance_before = math.sqrt( ((playerx-rewardx)**2)+((playery-rewardy)**2) )
         self.player.player_step(action)
         playerx, playery = self.player.get_player_position()
+        # collide = self.collision( playerx, playery, self.player.radius,
+        #                       self.map.obstacles[4].center_x - self.map.obstacles[4].half_width,
+        #                       self.map.obstacles[4].center_y - self.map.obstacles[4].half_height,
+        #                       self.map.obstacles[4].half_width * 2,
+        #                       self.map.obstacles[4].half_height * 2)
+        # print(collide)
+        distance_after = math.sqrt( ((playerx-rewardx)**2)+((playery-rewardy)**2) )
+        return distance_after-distance_before
+
+    def check_collide(self):
+        playerx, playery = self.player.get_player_position()
         collide = self.collision( playerx, playery, self.player.radius,
                               self.map.obstacles[4].center_x - self.map.obstacles[4].half_width,
                               self.map.obstacles[4].center_y - self.map.obstacles[4].half_height,
                               self.map.obstacles[4].half_width * 2,
-                              self.map.obstacles[4].half_height * 2
-                              ))
-                              
-        distance_after = math.sqrt( ((playerx-rewardx)**2)+((playery-rewardy)**2) )
-        return distance_after-distance_before
-
+                              self.map.obstacles[4].half_height * 2)
+        return collide
+        
     def collision(self, cx, cy, radius, rx, ry, rw, rh):  # circle definition
         """ Detect collision between a rectangle and circle. 
         cx, cy: circle position
@@ -118,8 +127,7 @@ class GeoFriend2:
         rx, ry: rectangle position
         rw, rh: rectangle width and height
         """ 
-        # rx, ry = rleft + rw/2, rtop + rh/2
-        # print("rx: {0}, ry: {1}".format(rx, ry))
+
         testX = cx
         testY = cy
 
@@ -141,8 +149,9 @@ class GeoFriend2:
 
         if (distance <= radius):
             return True
-
         return False
+
+        # source: http://www.jeffreythompson.org/collision-detection/circle-rect.php
 
     
 def test():
@@ -175,4 +184,4 @@ def test():
             #     pos = pygame.mouse.get_pos()
             #     print(pos)
 
-test()
+# test()

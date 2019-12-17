@@ -10,12 +10,23 @@ class HighPlatform(MapGenerator):
         if random.random() > 0.5:
             map = Map([Obstacle([480, 328], 960, 32)],
                       [[136, 264]],
-                      [[136, 100], [1100, 272]])
+                      [[1100, 272]])
         else:
             map = Map([Obstacle([800, 328], 960, 32)],
                       [[1150, 264]],
-                      [[1150, 100], [180, 272]])
+                      [[1150, 100]])
 
         map.is_terminal = lambda positions: any([pos[1] > 700 for pos in positions]) or len(map.rewards) == 0
 
         return map
+
+
+# def generate(self):
+#         if random.random() > 0.5:
+#             map = Map([Obstacle([480, 328], 960, 32)],
+#                       [[136, 264]],
+#                       [[136, 100], [1100, 272]])
+#         else:
+#             map = Map([Obstacle([800, 328], 960, 32)],
+#                       [[1150, 264]],
+#                       [[1150, 100], [180, 272]])

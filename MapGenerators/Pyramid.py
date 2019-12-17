@@ -10,8 +10,11 @@ class Pyramid(MapGenerator):
     def generate(self):
         map = Map([Obstacle([640, 660], 400, 200)],
                   [[150, 700]],
-                  [[random.randint(100, 300), random.randint(500, 700)],
-                   [random.randint(440, 840), random.randint(300, 500)],
-                   [random.randint(980, 1180), random.randint(500, 700)]])
+                  [[random.randint(980, 1180), random.randint(500, 700)]])
 
         return map
+
+
+        # [[random.randint(100, 300), random.randint(500, 700)],
+        #            [random.randint(440, 840), random.randint(300, 500)],
+        #            [random.randint(980, 1180), random.randint(500, 700)]]

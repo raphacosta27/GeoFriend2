@@ -2,11 +2,11 @@ import gym
 from gym.utils import seeding
 from gym.spaces import Discrete, Box
 
-from MapGenerators.Corners import Corners
 import pygame
 from pygame.locals import *
 import numpy as np
 from gym_geofriend2.envs.GeoFriend2 import GeoFriend2
+from random import randrange
 
 class GeoFriend2Env(gym.Env):
     """
@@ -44,14 +44,14 @@ class GeoFriend2Env(gym.Env):
         All the rewards for that map were collected.
     """
     # action_space = Discrete(4)
-    def __init__(self, map, player):
+    def __init__(self, maps, player):
         self.action_space = Discrete(4)
-        self.map = map
+        self.maps = maps
         low = [80,80,65,65]
         high = [1200,720,1215,735]
-        for obs in self.map.obstacles:
-                low.append(25, 25, 25, 25)
-                high.append(1255, 775, 1255, 775)
+        # for obs in test:
+        low.extend([25, 25, 25, 25])
+        high.extend([1255, 775, 1255, 775])
 
         self.observation_space = Box( low = np.array(low), 
                                       high = np.array(high) )
@@ -64,7 +64,8 @@ class GeoFriend2Env(gym.Env):
             self.GeoFriend2.render()
                     
     def reset(self):
-        self.GeoFriend2 = GeoFriend2(self.map, self.player)
+        index = randrange(len(self.maps))
+        self.GeoFriend2 = GeoFriend2(self.maps[index], self.player)
         self.GeoFriend2.reset_view()
         return self.GeoFriend2.set_state() # nao sei o que retornar ainda
 
