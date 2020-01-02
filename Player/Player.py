@@ -5,8 +5,8 @@ import random
 class Player():
     def __init__(self):
         self.radius = 40
-        self.x = 40 + self.radius
-        self.y = 800 - 40 - self.radius 
+        self.x = 40 + self.radius + 1
+        self.y = 800 - 40 - self.radius + 1
         self.vel = 10
         
     def player_step(self, action):
@@ -31,5 +31,9 @@ class Player():
         return self.x, self.y
     
     def set_initial_position(self):
-        self.x = 40 + self.radius
-        self.y = 800 - 40 - self.radius
+        self.x = 40 + self.radius + 1
+        self.y = 800 - 40 - self.radius + 1
+    
+    def set_position(self, x, y):
+        self.x = x
+        self.y = y

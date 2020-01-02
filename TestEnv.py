@@ -27,7 +27,7 @@ env_fn = lambda : gym.make("geofriend2-v0", maps=[Pyramid(), HighPlatform()], pl
 logger_kwargs = dict(output_dir='spinupPpo', exp_name='experiment')
 
 # ppo(env_fn=env_fn, ac_kwargs=ac_kwargs, steps_per_epoch=5000, epochs=50, logger_kwargs=logger_kwargs)
-ppo(env_fn=env_fn, steps_per_epoch=5000, epochs=500, logger_kwargs=logger_kwargs, visualize=False)
+ppo(env_fn=env_fn, steps_per_epoch=5000, epochs=500, logger_kwargs=logger_kwargs, visualize=True)
 
 # state = env.reset()
 # print("State: ", state)
