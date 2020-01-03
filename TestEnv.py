@@ -14,7 +14,7 @@ from rl.agents.dqn import DQNAgent
 from rl.policy import BoltzmannQPolicy
 from rl.memory import SequentialMemory
 from rl.callbacks import Callback
-from spinup import ppo
+from spinup import ppo, sac
 import tensorflow as tf
 
 map = Pyramid()
@@ -23,10 +23,13 @@ env_fn = lambda : gym.make("geofriend2-v0", maps=[Pyramid(), HighPlatform()], pl
 
 # ac_kwargs = dict(hidden_sizes=[64,64], activation=tf.nn.relu)
 
-logger_kwargs = dict(output_dir='spinupPpo', exp_name='experiment')
+logger_kwargs = dict(output_dir='spinupSac', exp_name='experiment')
 
 # ppo(env_fn=env_fn, ac_kwargs=ac_kwargs, steps_per_epoch=5000, epochs=50, logger_kwargs=logger_kwargs)
-ppo(env_fn=env_fn, steps_per_epoch=5000, epochs=500, logger_kwargs=logger_kwargs, visualize=True)
+sac(env_fn=env_fn, steps_per_epoch=5000, epochs=500, logger_kwargs=logger_kwargs, visualize=True)
+# env, test_env = env_fn(), env_fn()
+# print(type(env.observation_space.shape[0]))
+# print(env.action_space.shape)
 
 # state = env.reset()
 # print("State: ", state)

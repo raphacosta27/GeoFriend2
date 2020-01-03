@@ -1,6 +1,7 @@
 from gym.spaces import *
 import pygame
 import random
+import math
 
 class Player():
     def __init__(self):
@@ -11,16 +12,18 @@ class Player():
         self.vel = 10
         
     def player_step(self, action):
-        if action == 0: # Move to the left
-            self.x -= self.vel
-        elif action == 1: # Move to the right
-            self.x += self.vel
-        elif action == 2: # Move to the Top
-            self.y -= self.vel
-        elif action == 3: # Move to the bottom
-            self.y += self.vel
-        else:
-            raise NameError("Invalid action {0} taken".format(action))
+        self.x += self.vel*math.cos(action)
+        self.y += self.vel*math.sin(action)
+        # if action == 0: # Move to the left
+        #     self.x -= self.vel
+        # elif action == 1: # Move to the right
+        #     self.x += self.vel
+        # elif action == 2: # Move to the Top
+        #     self.y -= self.vel
+        # elif action == 3: # Move to the bottom
+        #     self.y += self.vel
+        # else:
+        #     raise NameError("Invalid action {0} taken".format(action))
         # Ver se pegou reward
 
     def render(self, screen):

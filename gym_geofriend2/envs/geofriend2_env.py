@@ -45,7 +45,8 @@ class GeoFriend2Env(gym.Env):
     """
     # action_space = Discrete(4)
     def __init__(self, maps, player):
-        self.action_space = Discrete(4)
+        self.action_space = Box(low=np.array([0]),
+                                high=np.array([360]))
         self.maps = maps
         low = [80,80,65,65]
         high = [1200,720,1215,735]

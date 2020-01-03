@@ -11,7 +11,7 @@ from Player.Player import Player
 _, get_action = load_policy('./spinupPpo')
 map = Corners()
 player = Player()
-env = gym.make("geofriend2-v0", maps=[HighPlatform()], player=player)#Pyramid(), 
+env = gym.make("geofriend2-v0", maps=[Pyramid(), HighPlatform()], player=player)#
 #run_policy(env, get_action, render=False)
 
 for i in range(10):
