@@ -8,9 +8,14 @@ from MapGenerators.Obstacle import Obstacle
 
 class Pyramid(MapGenerator):
     def generate(self):
-        map = Map([Obstacle([640, 660], 400, 200)],
-                  [[150, 700]],
-                  [[random.randint(980, 1180), random.randint(500, 700)]])
+        if random.random() > 0.5:
+            map = Map([Obstacle([640, 660], 400, 200)],
+                    [[150, 700]],
+                    [[random.randint(980, 1180), random.randint(500, 700)]])
+        else:
+            map = Map([Obstacle([640, 660], 400, 200)],
+                    [[1199, 719]],
+                    [[random.randint(980, 1180), random.randint(500, 700)]])
 
         return map
 
