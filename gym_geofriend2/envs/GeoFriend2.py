@@ -10,7 +10,8 @@ class GeoFriend2:
     def __init__(self, map, player, screen_res=[640, 400]):
         self.map = map.generate()
         self.player = player
-        self.player.set_initial_position()
+        self.player.set_initial_position(self.map.starting_positions)
+        # self.player.set_initial_position()
         self.state = None
 
         #pygame variables
