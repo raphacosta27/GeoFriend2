@@ -14,6 +14,7 @@ class GeoFriend2:
         self.player.set_initial_position(self.map.starting_position)
         # self.player.set_initial_position()
         self.state = None
+        self.steps = 0
 
         #pygame variables
         self.screen_res = screen_res
@@ -71,7 +72,7 @@ class GeoFriend2:
             if distance <= (self.player.radius + 25):
                 del self.map.rewards[i]
                 # print("Caught reward")
-                return 1
+                return (1000 - self.steps)
             else:
                 if(difference < 0):
                     return 1
@@ -90,6 +91,7 @@ class GeoFriend2:
         return self.state
 
     def player_step(self, action):
+        self.steps += 1
         playerx, playery = self.player.get_player_position()
         rewardx = self.map.rewards[0][0]
         rewardy = self.map.rewards[0][1]
@@ -142,7 +144,7 @@ class GeoFriend2:
                 return True
     
 def test():
-    map = Basic()
+    map = Pyramid()
     player = Player()
     teste = GeoFriend2(map, player)
 
@@ -163,9 +165,10 @@ def test():
                     teste.player_step(2)
                 elif event.key == pygame.K_DOWN:
                     teste.player_step(3)
-                # elif event.key == pygame.K_SPACE:
-                #     print("Space pressed")
-                #     teste.check_reward()
+                elif event.key == pygame.K_SPACE:
+                    print("Space pressed")
+                    map = Pyramid()
+                    teste = GeoFriend2(map, player)
             # if event.type == pygame.MOUSEBUTTONUP:
             #     print("Mouse event")
             #     pos = pygame.mouse.get_pos()

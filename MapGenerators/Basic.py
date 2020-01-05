@@ -18,7 +18,6 @@ class Basic(MapGenerator):
         while initial_rewardy == initial_playery:
             initial_rewardy = random.randint(65, 735)
 
-        print(f"Reward: {initial_rewardx}, {initial_rewardy}")
         map = Map([],
               [initial_playerx, initial_playery],
               [[initial_rewardx, initial_rewardy]])

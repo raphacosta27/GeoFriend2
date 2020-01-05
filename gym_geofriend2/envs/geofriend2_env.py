@@ -76,6 +76,4 @@ class GeoFriend2Env(gym.Env):
         # print("Observation: ", observation, end="\n")
         reward = self.GeoFriend2.get_episode_reward(difference)
         done = self.GeoFriend2.is_finished()
-        if done:
-            print("True")
         return observation, reward, done, {}

@@ -2,13 +2,13 @@
     "ac_kwargs":	{},
     "actor_critic":	"mlp_actor_critic",
     "clip_ratio":	0.2,
-    "env_fn":	"<function <lambda> at 0x10b1768c0>",
+    "env_fn":	"<function <lambda> at 0x1080ce8c0>",
     "epochs":	500,
     "exp_name":	"experiment",
     "gamma":	0.99,
     "lam":	0.97,
     "logger":	{
-        "<spinup.utils.logx.EpochLogger object at 0x12d76ca50>":	{
+        "<spinup.utils.logx.EpochLogger object at 0x12a6c9b50>":	{
             "epoch_dict":	{},
             "exp_name":	"experiment",
             "first_row":	true,
