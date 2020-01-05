@@ -6,13 +6,13 @@ from MapGenerators.Basic import Basic
 from MapGenerators.Corners import Corners
 from MapGenerators.Pyramid import Pyramid
 from MapGenerators.HighPlatform import HighPlatform
+from MapGenerators.TwoHighTowers import TwoHighTowers
 from Player.Player import Player
 
 _, get_action = load_policy('./spinupPpo')
 map = Corners()
 player = Player()
-env = gym.make("geofriend2-v0", maps=[Pyramid(), HighPlatform()], player=player)#
-#run_policy(env, get_action, render=False)
+env = gym.make("geofriend2-v0", maps=[Basic()], player=player)#Pyramid(), 
 
 for i in range(10):
     o = env.reset()

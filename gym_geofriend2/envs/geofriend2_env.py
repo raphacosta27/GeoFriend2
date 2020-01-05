@@ -45,30 +45,41 @@ class GeoFriend2Env(gym.Env):
     """
     # action_space = Discrete(4)
     def __init__(self, maps, player):
-        self.action_space = Box(low=np.array([0]),
-                                high=np.array([360]))
+        self.action_space = Discrete(4)
         self.maps = maps
-        low = [80,80,65,65]
-        high = [1200,720,1215,735]
-        # for obs in test:
-        low.extend([25, 25, 25, 25])
-        high.extend([1255, 775, 1255, 775])
+        self.map = None
+        self.observation_space = None
+        self.sort_map()
 
-        self.observation_space = Box( low = np.array(low), 
-                                      high = np.array(high) )
         self.GeoFriend2 = None
         
         self.player = player
-        
+
+    def sort_map(self):
+        index = randrange(len(self.maps))
+        self.map = self.maps[index]
+        # low = [80,0,65]
+        # high = [1200,1310,735]
+        low = [0]
+        high = [1310]
+        # print(self.map.)
+        # if(self.map.obstacles):
+        #     # for obs in test:
+        #     low.extend([25, 25, 25, 25])
+        #     high.extend([1255, 775, 1255, 775])
+
+        self.observation_space = Box( low = np.array(low), 
+                                      high = np.array(high) )    
+
     def render(self, mode='human'):
         if self.GeoFriend2 is not None:
             self.GeoFriend2.render()
                     
     def reset(self):
-        index = randrange(len(self.maps))
-        self.GeoFriend2 = GeoFriend2(self.maps[index], self.player)
+        self.sort_map()
+        self.GeoFriend2 = GeoFriend2(self.map, self.player)
         self.GeoFriend2.reset_view()
-        return self.GeoFriend2.set_state() # nao sei o que retornar ainda
+        return self.GeoFriend2.set_state()
 
     def step(self, action): 
         try:
@@ -77,8 +88,7 @@ class GeoFriend2Env(gym.Env):
             return self.GeoFriend2.state, -1, True, {}
 
         observation = self.GeoFriend2.set_state()
+        # print("Observation: ", observation, end="\n")
         reward = self.GeoFriend2.get_episode_reward(difference)
         done = self.GeoFriend2.is_finished()
-        # if reward == 1 and done:
-        #     print("Done")
         return observation, reward, done, {}

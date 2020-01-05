@@ -76,23 +76,25 @@ class GeoFriend2:
                 # print("Caught reward")
                 return 1
             else:
-                if(difference < 0):
-                    return 1
-                elif (difference > 0):
-                    return -1
-                else:
-                    return 0
+                # if(difference < 0):
+                #     return 1
+                # elif (difference > 0):
+                #     return -1
+                # else:
+                return 0
 
     def set_state(self):    
         playerx, playery = self.player.get_player_position()
         rewardx = self.map.rewards[0][0]
-        rewardy = self.map.rewards[0][1]
-        # distance = math.sqrt( ((playerx-rewardx)**2)+((playery-rewardy)**2) )
-        state = [playerx, playery, rewardx, rewardy]
+        rewardy = self.map.rewards[0][1]    
+        distance = math.sqrt( ((playerx-rewardx)**2)+((playery-rewardy)**2) )
+        # state = [playerx, playery, distance]
+        state = [distance]
         # for obs in self.map.obstacles:
-                # state.extend([obs.left_x, obs.top_y, obs.right_x, obs.bot_y])
-        state.extend([self.map.obstacles[4].left_x, self.map.obstacles[4].top_y, self.map.obstacles[4].right_x, self.map.obstacles[4].bot_y])
-        # print(len(state))
+        #         # state.extend([obs.left_x, obs.top_y, obs.right_x, obs.bot_y])
+        # if(len(self.map.obstacles) > 4):
+        #     state.extend([self.map.obstacles[4].left_x, self.map.obstacles[4].top_y, self.map.obstacles[4].right_x, self.map.obstacles[4].bot_y])
+
         self.state = np.array(state)
         return self.state
 
@@ -104,14 +106,8 @@ class GeoFriend2:
         self.player.player_step(action)
         if(self.check_collide()):
             self.player.set_position(playerx, playery)
-            # print("Colliding, cant move to this way")
+
         playerx, playery = self.player.get_player_position()
-        # collide = self.collision( playerx, playery, self.player.radius,
-        #                       self.map.obstacles[4].center_x - self.map.obstacles[4].half_width,
-        #                       self.map.obstacles[4].center_y - self.map.obstacles[4].half_height,
-        #                       self.map.obstacles[4].half_width * 2,
-        #                       self.map.obstacles[4].half_height * 2)
-        # print(collide)
         distance_after = math.sqrt( ((playerx-rewardx)**2)+((playery-rewardy)**2) )
         return distance_after-distance_before
         
@@ -146,16 +142,13 @@ class GeoFriend2:
             return True
         return False
 
-        # source: http://www.jeffreythompson.org/collision-detection/circle-rect.php
+    # source: http://www.jeffreythompson.org/collision-detection/circle-rect.php
     def check_collide(self):
         playerx, playery = self.player.get_player_position()
-        collide = False
         for obs in self.map.obstacles:
             if( self.collision(playerx, playery, self.player.radius, obs.center_x - obs.half_width,
                             obs.center_y - obs.half_height, obs.half_width * 2, obs.half_height * 2) ):
-                collide = True
-        return collide
-
+                return True
     
 def test():
     map = Pyramid()
