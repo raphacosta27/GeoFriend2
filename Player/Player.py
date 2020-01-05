@@ -32,9 +32,9 @@ class Player():
     def get_player_position(self):
         return self.x, self.y
     
-    def set_initial_position(self, starting_positions):
+    def set_initial_position(self, starting_position):
         # self.x = 1280 - self.radius - 40 - 1
-        self.x, self.y = starting_positions[0]
+        self.x, self.y = starting_position
         # self.x = 1280 - 80 - 1
         # self.y = 800 - 80 - 1
     

@@ -1,4 +1,5 @@
 from MapGenerators.Pyramid import Pyramid
+from MapGenerators.Basic import Basic
 from Player.Player import Player
 import pygame
 from pygame.locals import *
@@ -10,7 +11,7 @@ class GeoFriend2:
     def __init__(self, map, player, screen_res=[640, 400]):
         self.map = map.generate()
         self.player = player
-        self.player.set_initial_position(self.map.starting_positions)
+        self.player.set_initial_position(self.map.starting_position)
         # self.player.set_initial_position()
         self.state = None
 
@@ -58,12 +59,8 @@ class GeoFriend2:
         return
 
     def is_finished(self):
-        """Check wether if there are no more rewards in map or if player is out of bounds"""
-        player_is_out = False
-        playerx, playery = self.player.get_player_position()
-        if( (playerx < 80) | (playerx > 1200) | (playery < 80) | (playery > 720) ):
-            player_is_out = True
-        return (len(self.map.rewards) == 0) #| player_is_out
+        """Check wether if there are no more rewards in map"""
+        return (len(self.map.rewards) == 0) 
 
     def get_episode_reward(self, difference):
         playerx, playery = self.player.get_player_position()
@@ -76,25 +73,19 @@ class GeoFriend2:
                 # print("Caught reward")
                 return 1
             else:
-                # if(difference < 0):
-                #     return 1
-                # elif (difference > 0):
-                #     return -1
-                # else:
-                return 0
+                if(difference < 0):
+                    return 1
+                elif (difference > 0):
+                    return -1
+                else:
+                    return 0
 
     def set_state(self):    
         playerx, playery = self.player.get_player_position()
         rewardx = self.map.rewards[0][0]
         rewardy = self.map.rewards[0][1]    
         distance = math.sqrt( ((playerx-rewardx)**2)+((playery-rewardy)**2) )
-        # state = [playerx, playery, distance]
-        state = [distance]
-        # for obs in self.map.obstacles:
-        #         # state.extend([obs.left_x, obs.top_y, obs.right_x, obs.bot_y])
-        # if(len(self.map.obstacles) > 4):
-        #     state.extend([self.map.obstacles[4].left_x, self.map.obstacles[4].top_y, self.map.obstacles[4].right_x, self.map.obstacles[4].bot_y])
-
+        state = [playerx, playery, rewardx, rewardy]
         self.state = np.array(state)
         return self.state
 
@@ -151,7 +142,7 @@ class GeoFriend2:
                 return True
     
 def test():
-    map = Pyramid()
+    map = Basic()
     player = Player()
     teste = GeoFriend2(map, player)
 

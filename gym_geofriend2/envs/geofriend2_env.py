@@ -47,37 +47,22 @@ class GeoFriend2Env(gym.Env):
     def __init__(self, maps, player):
         self.action_space = Discrete(4)
         self.maps = maps
-        self.map = None
-        self.observation_space = None
-        self.sort_map()
+        low =  [80  ,  80, 65  , 65 ]
+        high = [1200, 720, 1215, 735]
+        self.observation_space = Box( low = np.array(low), 
+                                      high = np.array(high) ) 
 
         self.GeoFriend2 = None
         
         self.player = player
-
-    def sort_map(self):
-        index = randrange(len(self.maps))
-        self.map = self.maps[index]
-        # low = [80,0,65]
-        # high = [1200,1310,735]
-        low = [0]
-        high = [1310]
-        # print(self.map.)
-        # if(self.map.obstacles):
-        #     # for obs in test:
-        #     low.extend([25, 25, 25, 25])
-        #     high.extend([1255, 775, 1255, 775])
-
-        self.observation_space = Box( low = np.array(low), 
-                                      high = np.array(high) )    
 
     def render(self, mode='human'):
         if self.GeoFriend2 is not None:
             self.GeoFriend2.render()
                     
     def reset(self):
-        self.sort_map()
-        self.GeoFriend2 = GeoFriend2(self.map, self.player)
+        index = randrange(len(self.maps))
+        self.GeoFriend2 = GeoFriend2(self.maps[index], self.player)
         self.GeoFriend2.reset_view()
         return self.GeoFriend2.set_state()
 
@@ -91,4 +76,6 @@ class GeoFriend2Env(gym.Env):
         # print("Observation: ", observation, end="\n")
         reward = self.GeoFriend2.get_episode_reward(difference)
         done = self.GeoFriend2.is_finished()
+        if done:
+            print("True")
         return observation, reward, done, {}
