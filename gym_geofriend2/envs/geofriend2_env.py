@@ -7,6 +7,10 @@ from pygame.locals import *
 import numpy as np
 from gym_geofriend2.envs.GeoFriend2 import GeoFriend2
 from random import randrange
+from Player.Player import Player
+from MapGenerators.Pyramid import Pyramid
+from MapGenerators.Basic import Basic
+from MapGenerators.HighPlatform import HighPlatform
 
 class GeoFriend2Env(gym.Env):
     """
@@ -20,7 +24,6 @@ class GeoFriend2Env(gym.Env):
         
         2     Reward Position x             65 (obstacle+raio)           1215 (1280-obstacle-raio)
         3     Reward Position y             65 (obstacle+raio)           735  (800-obstacle-raio)
-
         4     Obstacle left_x               25                           1255
         5     Obstacle top_y                25                           775
         6     Obstacle right_X              25                           1255
@@ -44,51 +47,42 @@ class GeoFriend2Env(gym.Env):
         All the rewards for that map were collected.
     """
     # action_space = Discrete(4)
-    def __init__(self, maps, player):
+    def __init__(self):
         self.action_space = Discrete(4)
-        self.maps = maps
-        self.map = None
-        self.observation_space = None
-        self.sort_map()
+        self.maps = [Pyramid(), HighPlatform()]
+    
+        low =  [80  ,  80, 65  , 65 ]
+        high = [1200, 720, 1215, 735]
+
+        self.observation_space = Box( low = np.array(low), 
+                                      high = np.array(high) ) 
 
         self.GeoFriend2 = None
         
-        self.player = player
-
-    def sort_map(self):
-        index = randrange(len(self.maps))
-        self.map = self.maps[index]
-        # low = [80,0,65]
-        # high = [1200,1310,735]
-        low = [0]
-        high = [1310]
-        # print(self.map.)
-        # if(self.map.obstacles):
-        #     # for obs in test:
-        #     low.extend([25, 25, 25, 25])
-        #     high.extend([1255, 775, 1255, 775])
-
-        self.observation_space = Box( low = np.array(low), 
-                                      high = np.array(high) )    
+        self.player = Player()
 
     def render(self, mode='human'):
         if self.GeoFriend2 is not None:
             self.GeoFriend2.render()
                     
     def reset(self):
-        self.sort_map()
-        self.GeoFriend2 = GeoFriend2(self.map, self.player)
+        index = randrange(len(self.maps))
+        self.GeoFriend2 = GeoFriend2(self.maps[index], self.player)
         self.GeoFriend2.reset_view()
         return self.GeoFriend2.set_state()
 
     def step(self, action): 
         try:
-            difference = self.GeoFriend2.player_step(action)
+            difference, collided = self.GeoFriend2.player_step(action)
         except AssertionError:
             return self.GeoFriend2.state, -1, True, {}
 
-        observation = self.GeoFriend2.set_state()
-        # print("Observation: ", observation, end="\n")
-        reward = self.GeoFriend2.get_episode_reward(difference)
-        done = self.GeoFriend2.is_finished()
-        return observation, reward, done, {}
+        if collided:
+            return self.GeoFriend2.state, -1, True, {}
+        else:
+            observation = self.GeoFriend2.set_state()
+            # print("Observation: ", observation, end="\n")
+            reward = self.GeoFriend2.get_episode_reward(difference)
+            # print("reward: ", reward)
+            done = self.GeoFriend2.is_finished()
+            return observation, reward, done, {}

@@ -9,9 +9,8 @@ from Player.Player import Player
 from spinup import ppo
 import tensorflow as tf
 
-maps = [Basic(), Pyramid(), HighPlatform()]
-player = Player()
-env_fn = lambda : gym.make("geofriend2-v0", maps=[Basic()], player=player)
+
+env_fn = lambda : gym.make("geofriend2-v0")
 
 # ac_kwargs = dict(hidden_sizes=[64,64], activation=tf.nn.relu)
 
