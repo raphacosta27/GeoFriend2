@@ -7,6 +7,10 @@ from pygame.locals import *
 import numpy as np
 from gym_geofriend2.envs.GeoFriend2 import GeoFriend2
 from random import randrange
+from Player.Player import Player
+from MapGenerators.Pyramid import Pyramid
+from MapGenerators.Basic import Basic
+from MapGenerators.HighPlatform import HighPlatform
 
 class GeoFriend2Env(gym.Env):
     """
@@ -44,17 +48,19 @@ class GeoFriend2Env(gym.Env):
         All the rewards for that map were collected.
     """
     # action_space = Discrete(4)
-    def __init__(self, maps, player):
+    def __init__(self):
         self.action_space = Discrete(4)
-        self.maps = maps
-        low =  [80  ,  80, 65  , 65 ]
-        high = [1200, 720, 1215, 735]
+        self.maps = [Basic(), Pyramid(), HighPlatform()]
+    
+        low =  [80  ,  80, 65  , 65 , 0   ]
+        high = [1200, 720, 1215, 735, 1310]
+
         self.observation_space = Box( low = np.array(low), 
                                       high = np.array(high) ) 
 
         self.GeoFriend2 = None
         
-        self.player = player
+        self.player = Player()
 
     def render(self, mode='human'):
         if self.GeoFriend2 is not None:
@@ -67,13 +73,15 @@ class GeoFriend2Env(gym.Env):
         return self.GeoFriend2.set_state()
 
     def step(self, action): 
+        # print("Action: ", action)
         try:
-            difference = self.GeoFriend2.player_step(action)
+            difference, collided = self.GeoFriend2.player_step(action)
         except AssertionError:
             return self.GeoFriend2.state, -1, True, {}
 
         observation = self.GeoFriend2.set_state()
         # print("Observation: ", observation, end="\n")
-        reward = self.GeoFriend2.get_episode_reward(difference)
+        reward = self.GeoFriend2.get_episode_reward(difference, collided)
+        # print("reward: ", reward)
         done = self.GeoFriend2.is_finished()
         return observation, reward, done, {}

@@ -20,7 +20,7 @@ class Pyramid(MapGenerator):
             for obs in obstacles:         
                 if( collision(initial_playerx, initial_playery, 40, 
                             obs.center_x - obs.half_width, obs.center_y - obs.half_height, 
-                            obs.half_width * 2, obs.half_height * 2) ):        
+                            obs.half_width * 2, obs.half_height * 2)[0] ):        
                     colliding = True
             if colliding:
                 continue
@@ -40,7 +40,7 @@ class Pyramid(MapGenerator):
             for obs in obstacles:         
                 if( (collision(initial_rewardx, initial_rewardy, 25, 
                         obs.center_x - obs.half_width, obs.center_y - obs.half_height, 
-                        obs.half_width * 2, obs.half_height * 2))):
+                        obs.half_width * 2, obs.half_height * 2)[0])):
                     colliding = True
             if colliding:
                 continue

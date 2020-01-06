@@ -1,5 +1,7 @@
 from MapGenerators.Pyramid import Pyramid
 from MapGenerators.Basic import Basic
+from MapGenerators.HighPlatform import HighPlatform
+from MapGenerators.utils import collision
 from Player.Player import Player
 import pygame
 from pygame.locals import *
@@ -34,6 +36,11 @@ class GeoFriend2:
         #show player
         if self.player:
             self.player.render(self.screen)
+            #get grounds
+            grounds = [self.map.obstacles[0]]
+            if(len(self.map.obstacles) > 4):
+                grounds.extend(self.map.obstacles[4:])
+            self.player.update(grounds)
 
         #show rewards
         for reward in self.map.rewards:
@@ -61,9 +68,16 @@ class GeoFriend2:
 
     def is_finished(self):
         """Check wether if there are no more rewards in map"""
-        return (len(self.map.rewards) == 0) 
+        player_is_out = False
+        playerx, playery = self.player.get_player_position()
+        if( (playerx < 0) | (playerx > 1280) | (playery < 0) | (playery > 800) ):
+            player_is_out = True
+        return (len(self.map.rewards) == 0) | player_is_out 
 
-    def get_episode_reward(self, difference):
+    def get_episode_reward(self, difference, collided):
+        if collided:
+            return -1
+
         playerx, playery = self.player.get_player_position()
         for i in range (0, len(self.map.rewards)):
             rewardx = int(self.map.rewards[i][0])
@@ -75,7 +89,7 @@ class GeoFriend2:
                 return (1000 - self.steps)
             else:
                 if(difference < 0):
-                    return 1
+                    return 0
                 elif (difference > 0):
                     return -1
                 else:
@@ -86,7 +100,7 @@ class GeoFriend2:
         rewardx = self.map.rewards[0][0]
         rewardy = self.map.rewards[0][1]    
         distance = math.sqrt( ((playerx-rewardx)**2)+((playery-rewardy)**2) )
-        state = [playerx, playery, rewardx, rewardy]
+        state = [playerx, playery, rewardx, rewardy, distance]
         self.state = np.array(state)
         return self.state
 
@@ -96,52 +110,10 @@ class GeoFriend2:
         rewardx = self.map.rewards[0][0]
         rewardy = self.map.rewards[0][1]
         distance_before = math.sqrt( ((playerx-rewardx)**2)+((playery-rewardy)**2) )
-        self.player.player_step(action)
-        if(self.check_collide()):
-            self.player.set_position(playerx, playery)
-
+        collided = self.player.player_step(action, self.map.obstacles) 
         playerx, playery = self.player.get_player_position()
         distance_after = math.sqrt( ((playerx-rewardx)**2)+((playery-rewardy)**2) )
-        return distance_after-distance_before
-        
-    def collision(self, cx, cy, radius, rx, ry, rw, rh):  # circle definition
-        """ Detect collision between a rectangle and circle. 
-        cx, cy: circle position
-        radius: circle radius
-        rx, ry: rectangle position
-        rw, rh: rectangle width and height
-        """ 
-
-        testX = cx
-        testY = cy
-
-        #If the circle is to the RIGHT of the square, check against the RIGHT edge. LEFT otherwise.   
-        if (cx < rx):
-            testX = rx        #left edge
-        elif (cx > rx+rw): 
-            testX = rx+rw     #right edge
-
-        #If the circle is ABOVE the square, check against the TOP edge. BOTTOM otherwise
-        if (cy < ry):
-            testY = ry        #top edge
-        elif (cy > ry+rh):
-            testY = ry+rh     #bottom edge
-
-        distX = cx-testX
-        distY = cy-testY
-        distance = math.sqrt( (distX*distX) + (distY*distY) )
-
-        if (distance <= radius):
-            return True
-        return False
-
-    # source: http://www.jeffreythompson.org/collision-detection/circle-rect.php
-    def check_collide(self):
-        playerx, playery = self.player.get_player_position()
-        for obs in self.map.obstacles:
-            if( self.collision(playerx, playery, self.player.radius, obs.center_x - obs.half_width,
-                            obs.center_y - obs.half_height, obs.half_width * 2, obs.half_height * 2) ):
-                return True
+        return distance_after-distance_before, collided
     
 def test():
     map = Pyramid()
@@ -158,13 +130,13 @@ def test():
                 run = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    teste.player_step(0)
-                elif event.key == pygame.K_RIGHT:
-                    teste.player_step(1)
-                elif event.key == pygame.K_UP:
                     teste.player_step(2)
-                elif event.key == pygame.K_DOWN:
+                elif event.key == pygame.K_RIGHT:
                     teste.player_step(3)
+                elif event.key == pygame.K_UP:
+                    teste.player_step(1)
+                elif event.key == pygame.K_DOWN:
+                    teste.player_step(0)
                 elif event.key == pygame.K_SPACE:
                     print("Space pressed")
                     map = Pyramid()

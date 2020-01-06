@@ -9,12 +9,10 @@ from Player.Player import Player
 from spinup import ppo
 import tensorflow as tf
 
-maps = [Basic(), Pyramid()]
-player = Player()
-env_fn = lambda : gym.make("geofriend2-v0", maps=maps, player=player)
+env_fn = lambda : gym.make("geofriend2-v0")
 
 # ac_kwargs = dict(hidden_sizes=[64,64], activation=tf.nn.relu)
 
 logger_kwargs = dict(output_dir='spinupPpo', exp_name='experiment')
 
-ppo(env_fn=env_fn, steps_per_epoch=5000, epochs=500, logger_kwargs=logger_kwargs, visualize=False)
+ppo(env_fn=env_fn, steps_per_epoch=5000, epochs=1000, logger_kwargs=logger_kwargs, visualize=False)
