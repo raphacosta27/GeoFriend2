@@ -48,3 +48,7 @@ The purpose of this project was to develop an OpenAI Gym environment with a simp
 * **Bruna Kimura up201902504@fe.up.pt** - [brunakimura](https://github.com/BrunaKimura/) 
 * **Raphael Costa up201902503@fe.up.pt** - [raphacosta27](https://github.com/raphacosta27)
 
+Universidade do Porto </br>
+MIEIC - Mestrado Integrado em Engenharia de Informática e Computação </br>
+
+![UP Logo](up_logo.jpg)
