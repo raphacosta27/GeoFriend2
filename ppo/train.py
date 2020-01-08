@@ -15,4 +15,4 @@ env_fn = lambda : gym.make("geofriend2-v0")
 
 logger_kwargs = dict(output_dir='spinupPpo', exp_name='experiment')
 
-ppo(env_fn=env_fn, steps_per_epoch=5000, epochs=500, logger_kwargs=logger_kwargs, visualize=False)
+ppo(env_fn=env_fn, steps_per_epoch=5000, epochs=500, logger_kwargs=logger_kwargs)

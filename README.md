@@ -2,118 +2,49 @@
 
 The purpose of this project was to develop an OpenAI Gym environment with a simplified version of Geometry Friends game.
 
-## Getting Started
-To get a copy of the project, clone this repository.
-```python
-git clone https://github.com/raphacosta27/LaplaceExpansionImplementation
-cd LaplaceExpansionImplementation
-```
-
 ### Prerequisites
 
-To run the file determinant.cpp, you just have to install g++. To compile it, I used the g++-9.
-On Mac:
-```
-brew install gcc
-g++-9 -v
-```
-Also, to use the MPI optmised version, you have to install the OpenMPI lib for gcc. 
-On Mac:
-```
-brew install open-mpi 
-```
-For other OS, check the OpenMPI official website linked in some sections below for installation instructions.
+1) This project was developed using the following: <br/>
+    Ubuntu 16 or higher </br>
+    python 3.7.5: https://www.python.org/downloads/release/python-375/
 
-### The Laplace Expansion method
-In summary, Laplace expansion is a method that uses determinants of smaller matrices to find the determinant of a larger square matrix. For a good mathematical explanation you can check the [CliffsNotes](https://www.cliffsnotes.com/study-guides/algebra/linear-algebra/the-determinant/laplace-expansions-for-the-determinant) demonstration. Also, my version is able to calculate only the Laplace Expansion for the first line of a given matrix. In CliffsNotes explanation, you will see that you can find the determinant of a matrix using the method for any line or any column.
+2) Install pip for the version of this python. In ubuntu:
+    ```
+    sudo apt-get install python3-pip
+    ```
 
-### Running raw implementation
-As I said, to see the raw implementation of the method, you can compile and run determinant.cpp. 
-```C++
-g++-9 determinant.cpp -o determinant
-./determinant N
-```
-It requires a N input in command line, which corresponds for the matrix size. The pattern is to test with a matrix of size N and values beggining in 1 and going until N. So:
+3) Next, install the other libraries needed for this project:
+    ```
+    pip3 install keras==2.2.4
+    pip3 install keras-rl==0.4.2
+    pip3 install tensorflow==1.13.1
+    pip3 install gym==0.12.1
+    pip3 install h5py==2.9.0
+    pip3 install pygame
+    ```
 
-```C++
-./determinant 3
-Calculating Determinant for the matrix: 
-| 1.000000  | 2.000000  | 3.000000  
-| 4.000000  | 5.000000  | 6.000000  
-| 7.000000  | 8.000000  | 9.000000  
+4) Install the Spinning Up library following their site instructions:
+    https://spinningup.openai.com/en/latest/user/installation.html
 
-D |m| = 0
-Time: 1.2e-05s
-```
+5) Finally, make sure that you are in the main directory of the project and run:
+    ```
+    pip3 install -e .
+    ```
 
-### The OpenMPI Implementation
-The OpenMPI implementation is avaiable in the file determinantMpi.cpp. to run:
-```C++
-mpic++ determinantMpi.cpp -o determinantMpi
-mpirun determinantMpi N
-```
-The same as the raw implementation, it also requires a N input corresponding for the size of the test matrix. Also, in MPI you can specify how much cores you want to distribute the execution. The example above will run with all avaiable cores in your machine. To use with a specific number of cores, you should run with mpirun -n nCores determinantMpi N.
-```C++
-mpirun -n 4 determinantMpi 3
-```
-The MPI optimisation
-#### Master:
-- Get the max cores avaiable 
-- The number of jobs corresponds to the size of the input matrix.
-- Determine how many and what Cofactors which core will calculate. Ex: For an 8x8 matrix, Worker 1 will calculate 2 cofactors and Workers 2 and 3 will calculate 3 cofactors. 
-- Creates the matrix to be calculated.
-- Uses MPI_Broadcast to send the matrix to its workers.
-#### Workers:
-- The workers do the number of jobs that the master determined for them. 
-- Send back the local results via MPI_Reduce instruction
-Finally, the master shows the final result and the report of the work. Eg:
+6) The trainment for PPO algorithm is already done. To see the algorithm working inside the environment, run:</br>
+    ```
+    cd ppo
+    python3 test.py
+    ```
 
-```C++
-----------WORKERS REPORT----------
-Number of workers: 3
-Worker 1
-Jobs: 1
-Positions in the first line calculated: 0 
--------
-Worker 2
-Jobs: 1
-Positions in the first line calculated: 1 
--------
-Worker 3
-Jobs: 2
-Positions in the first line calculated: 3 2 
--------
-----------FINAL REPORT----------
-Calculated Determinant for the matrix: 
-| 1.000000  | 2.000000  | 3.000000  | 4.000000  
-| 5.000000  | 6.000000  | 7.000000  | 8.000000  
-| 9.000000  | 10.000000 | 11.000000 | 12.000000  
-| 13.000000 | 14.000000 | 15.000000 | 16.000000  
+    This is not recommended, but if you want to redo it, run:</br>
+    ```
+    cd ppo
+    rm -rf spinupPpo; python3 train.py  
+    ```
 
-DETERMINANT RESULT: 0.000000
-```
-
-## Future implementations and possible improvements
-There are three main improvements that I would like to implement in this algorithm:
-1. Get the input matrix by an input file. I thought about a simple .txt.
-2. Calculate the Laplace Expansion for any line or any column. So you can input which one you want to calculate.
-3. Some unit tests using a C++ function for calculating a determinant.
-
-## Built With
-
-* [OpenMPI](https://www.open-mpi.org/) - OpenMPI official website
-* [GCC](https://gcc.gnu.org/) - GCC, the GNU Compiler Collection
-* [Brew](https://brew.sh/) - The missing package manager for macOS (or Linux)
 
 ## Authors
+* **Bruna Kimura up201902504@fe.up.pt** - [brunakimura](https://github.com/BrunaKimura/) 
+* **Raphael Costa up201902503@fe.up.pt** - [raphacosta27](https://github.com/raphacosta27)
 
-* **Raphael Costa** - [raphacosta27](https://github.com/raphacosta27)
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
-
-## Acknowledgments
-
-* Thanks for some good ideas with this readme style **Billie Thompson** - [PurpleBooth](https://github.com/PurpleBooth)
-* Buitl with some help of my Insper SuperComputers subject teacher **Luciano Soares** - [lpsoares](https://github.com/lpsoares) 
