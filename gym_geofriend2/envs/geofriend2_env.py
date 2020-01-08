@@ -50,7 +50,7 @@ class GeoFriend2Env(gym.Env):
     # action_space = Discrete(4)
     def __init__(self):
         self.action_space = Discrete(4)
-        self.maps = [Basic(), Pyramid(), HighPlatform()]
+        self.maps = [Basic(), Pyramid()] #, HighPlatform()
     
         low =  [80  ,  80, 65  , 65 , 0   ]
         high = [1200, 720, 1215, 735, 1310]
