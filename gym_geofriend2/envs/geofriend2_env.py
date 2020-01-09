@@ -1,20 +1,38 @@
 import gym
-from gym import error, spaces, utils
 from gym.utils import seeding
+from gym.spaces import Discrete, Box
 
-from MapGenerators.Corners import Corners
 import pygame
 from pygame.locals import *
+import numpy as np
+from gym_geofriend2.envs.GeoFriend2 import GeoFriend2
+from random import randrange
+from Player.Player import Player
+from MapGenerators.Pyramid import Pyramid
+from MapGenerators.Basic import Basic
+from MapGenerators.HighPlatform import HighPlatform
 
 class GeoFriend2Env(gym.Env):
-      """
+    """
     Description:
         GeoFriend is the player and his unique and basic objective is to collect all the points that are distributed along the map.
     Observation: 
         Type: Box(2)
-        Num	Observation                 Min                  Max
-        0	  Circle Position             Left limit           Right limit
-        1	  Circle Velocity             -Inf                 Inf
+        Num	  Observation                   Min                          Max
+        0	  Circle Position x             80 (obstacle+raio)           1200 (1280-obstacle-raio)
+        1	  Circle Position y             80 (obstacle+raio)           720  (800-obstacle-raio)
+        
+        2     Reward Position x             65 (obstacle+raio)           1215 (1280-obstacle-raio)
+        3     Reward Position y             65 (obstacle+raio)           735  (800-obstacle-raio)
+
+        4     Obstacle left_x               25                           1255
+        5     Obstacle top_y                25                           775
+        6     Obstacle right_X              25                           1255
+        7     Obstacle bot_y                25                           775
+        .
+        .
+        .
+        .
         
     Action:
         Type: Discrete(4)
@@ -25,66 +43,45 @@ class GeoFriend2Env(gym.Env):
         3	Push Circle to the bottom
         
     Reward:
-        Reward is 1 if the player collects one point. 
-    Starting State:
-        All observations are assigned a uniform random value in [-0.05..0.05]
+        Reward is 1 if the player collects one point and 0 if the movement doesnt collect any point. 
     Episode Termination:
         All the rewards for that map were collected.
     """
+    # action_space = Discrete(4)
+    def __init__(self):
+        self.action_space = Discrete(4)
+        self.maps = [Basic(), Pyramid()] #, HighPlatform()
+    
+        low =  [80  ,  80, 65  , 65 , 0   ]
+        high = [1200, 720, 1215, 735, 1310]
 
-  def __init__(self, map, agent=None, screen_res=[640, 400] ):
-    self.map = map
+        self.observation_space = Box( low = np.array(low), 
+                                      high = np.array(high) ) 
 
-    self.action_space = spaces.Discrete(4)
-    self.observation_space = spaces.Box(left_limit, right_limit, dtype=np.float32)
+        self.GeoFriend2 = None
+        
+        self.player = Player()
 
-    #Init for rendering pygame
-    self.screen_res = screen_res
-    self.screen, self.gui_window, self.screen_resized = None, None, None
+    def render(self, mode='human'):
+        if self.GeoFriend2 is not None:
+            self.GeoFriend2.render()
+                    
+    def reset(self):
+        index = randrange(len(self.maps))
+        self.GeoFriend2 = GeoFriend2(self.maps[index], self.player)
+        self.GeoFriend2.reset_view()
+        return self.GeoFriend2.set_state()
 
-    pygame.init()
-    self.screen = pygame.surface.Surface((1280, 800))  # original GF size
-    self.screen_resized = pygame.surface.Surface(screen_res)  # original GF size
-    pygame.display.set_caption("GeoFriend2")
+    def step(self, action): 
+        # print("Action: ", action)
+        try:
+            difference, collided = self.GeoFriend2.player_step(action)
+        except AssertionError:
+            return self.GeoFriend2.state, -1, True, {}
 
-  # def step(self, action):
-  #   ...
-
-  def reset(self):
-    self.prepare_frame()
-
-  def render(self, close = False):
-    if close:
-      pygame.quit()
-      self.screen = None
-      return
-
-    if self.gui_window is None:
-      pygame.init()
-      self.screen = pygame.surface.Surface((1280, 800))  # original GF size
-      pygame.display.set_caption("GeoFriend2")
-      self.gui_window = pygame.display.set_mode(self.screen_res, HWSURFACE | DOUBLEBUF | RESIZABLE)
-
-    self.prepare_frame()
-
-    self.gui_window.blit(pygame.transform.scale(self.screen, self.screen_res), (0, 0))
-    pygame.display.flip()
-
-  def prepare_frame(self):
-    self.screen.fill((0, 0, 255))
-    # Draw obstacles
-    for obs in self.map.obstacles:
-        pygame.draw.rect(self.screen, (0, 0, 0),
-                          [obs.left_x, obs.top_y, obs.right_x - obs.left_x, obs.bot_y - obs.top_y])
-    # Draw agents
-    if(self.agent):
-      agent.render(self.screen)
-      agent.step()
-
-    # Draw rewards
-    for reward in self.map.rewards:
-        pygame.draw.circle(self.screen, (255, 0, 255), [int(reward[0]), int(reward[1])], 25)
-
-  def close(self):
-    self.render(close=True)
-    return
+        observation = self.GeoFriend2.set_state()
+        # print("Observation: ", observation, end="\n")
+        reward = self.GeoFriend2.get_episode_reward(difference, collided)
+        # print("reward: ", reward)
+        done = self.GeoFriend2.is_finished()
+        return observation, reward, done, {}

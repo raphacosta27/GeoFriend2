@@ -7,13 +7,19 @@ from MapGenerators.MapGenerator import MapGenerator
 class Basic(MapGenerator):
 
     def generate(self):
-        if random.random() > 0.5:
-            map = Map([],
-                      [[random.randint(350, 600), 700], [random.randint(100, 300), 700]],
-                      [[random.randint(700, 1150), random.randint(300, 700)]])
-        else:
-            map = Map([],
-                      [[random.randint(950, 1150), 700], [random.randint(700, 900), 700]],
-                      [[random.randint(100, 600), random.randint(300, 700)]])
+        initial_playerx = random.randint(80, 1200)
+        initial_playery = random.randint(80, 720)
+
+        initial_rewardx = initial_playerx
+        while initial_rewardx == initial_playerx:
+            initial_rewardx = random.randint(65, 1215)
+        
+        initial_rewardy = initial_playery
+        while initial_rewardy == initial_playery:
+            initial_rewardy = random.randint(65, 735)
+
+        map = Map([],
+              [initial_playerx, initial_playery],
+              [[initial_rewardx, initial_rewardy]])
 
         return map
